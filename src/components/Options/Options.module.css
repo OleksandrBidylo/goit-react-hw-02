@@ -1,0 +1,13 @@
+.list {
+  display: flex;
+  list-style: none;
+  gap: 10px;
+
+  li {
+    cursor: pointer;
+    font-size: 22px;
+    border: 1px solid gray;
+    padding: 5px;
+    border-radius: 2px;
+  }
+}

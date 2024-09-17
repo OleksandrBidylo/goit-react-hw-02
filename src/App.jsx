@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import Description from "./components/Descripnion/Description";
+import Feedback from "./components/Feedback/Feedback";
+import Options from "./components/Options/Options";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const initialRate = {
+    Good: 0,
+    Neutral: 0,
+    Bad: 0,
+  };
+
+  const [rate, setRate] = useState(() => {
+    const savedRate = localStorage.getItem("rate");
+    return savedRate ? JSON.parse(savedRate) : initialRate;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("rate", JSON.stringify(rate));
+  }, [rate]);
+
+  const handleChangeRating = (variant) => {
+    setRate((prev) => ({ ...prev, [variant]: prev[variant] + 1 }));
+  };
+
+  const resetResults = () => {
+    setRate(initialRate);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <Description />
+      <Options
+        rate={rate}
+        handleChangeRating={handleChangeRating}
+        resetResults={resetResults}
+      />
+      <Feedback rate={rate} />
+    </div>
+  );
+};
 
-export default App
+export default App;

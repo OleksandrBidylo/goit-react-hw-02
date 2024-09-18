@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import Description from "./components/Descripnion/Description";
 import Feedback from "./components/Feedback/Feedback";
 import Options from "./components/Options/Options";
+import Notification from "./components/Notification/Notification";
 
 const App = () => {
   const initialRate = {
-    Good: 0,
-    Neutral: 0,
-    Bad: 0,
+    good: 0,
+    neutral: 0,
+    bad: 0,
   };
 
   const [rate, setRate] = useState(() => {
@@ -15,17 +16,25 @@ const App = () => {
     return savedRate ? JSON.parse(savedRate) : initialRate;
   });
 
+  const [hasRatingChanged, setHasRatingChanged] = useState(false);
+
   useEffect(() => {
     localStorage.setItem("rate", JSON.stringify(rate));
   }, [rate]);
 
   const handleChangeRating = (variant) => {
     setRate((prev) => ({ ...prev, [variant]: prev[variant] + 1 }));
+    setHasRatingChanged(true);
   };
 
   const resetResults = () => {
     setRate(initialRate);
+    setHasRatingChanged(false);
   };
+
+  const total = rate.good + rate.neutral + rate.bad;
+  const positivePercentage =
+    total > 0 ? ((rate.good / total) * 100).toFixed(2) : 0;
 
   return (
     <div>
@@ -34,8 +43,18 @@ const App = () => {
         rate={rate}
         handleChangeRating={handleChangeRating}
         resetResults={resetResults}
+        showReset={hasRatingChanged}
       />
-      <Feedback rate={rate} />
+
+      {!hasRatingChanged && <Notification />}
+
+      {hasRatingChanged && (
+        <Feedback
+          rate={rate}
+          total={total}
+          positivePercentage={positivePercentage}
+        />
+      )}
     </div>
   );
 };

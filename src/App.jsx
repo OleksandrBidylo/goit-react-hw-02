@@ -16,20 +16,16 @@ const App = () => {
     return savedRate ? JSON.parse(savedRate) : initialRate;
   });
 
-  const [hasRatingChanged, setHasRatingChanged] = useState(false);
-
   useEffect(() => {
     localStorage.setItem("rate", JSON.stringify(rate));
   }, [rate]);
 
   const handleChangeRating = (variant) => {
     setRate((prev) => ({ ...prev, [variant]: prev[variant] + 1 }));
-    setHasRatingChanged(true);
   };
 
   const resetResults = () => {
     setRate(initialRate);
-    setHasRatingChanged(false);
   };
 
   const total = rate.good + rate.neutral + rate.bad;
@@ -43,12 +39,12 @@ const App = () => {
         rate={rate}
         handleChangeRating={handleChangeRating}
         resetResults={resetResults}
-        showReset={hasRatingChanged}
+        showReset={total > 0}
       />
 
-      {!hasRatingChanged && <Notification />}
+      {total === 0 && <Notification />}
 
-      {hasRatingChanged && (
+      {total > 0 && (
         <Feedback
           rate={rate}
           total={total}
